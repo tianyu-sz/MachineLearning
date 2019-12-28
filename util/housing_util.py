@@ -27,6 +27,14 @@ def load_data():
     maximums, minimums, avgs = training_data.max(axis=0), training_data.min(axis=0), \
                                training_data.sum(axis=0) / training_data.shape[0]
 
+    # 记录数据的归一化参数，在预测时对数据做归一化
+    global max_values
+    global min_values
+    global avg_values
+    max_values = maximums
+    min_values = minimums
+    avg_values = avgs
+
     # 对数据进行归一化处理
     for i in range(feature_num):
         # print(maximums[i], minimums[i], avgs[i])
@@ -35,4 +43,22 @@ def load_data():
     # 训练集和测试集的划分比例
     training_data = data[:offset]
     test_data = data[offset:]
-    return training_data, test_data
+    return training_data, test_data, [max_values,min_values, avg_values]
+
+
+def load_one_example():
+    data_dir = 'resources/housing.data'
+    f = open(data_dir, 'r')
+    datas = f.readlines()
+    # 选择倒数第10条数据用于测试
+    tmp = datas[-10]
+    tmp = tmp.strip().split()
+    one_data = [float(v) for v in tmp]
+
+    # 对数据进行归一化处理
+    for i in range(len(one_data) - 1):
+        one_data[i] = (one_data[i] - avg_values[i]) / (max_values[i] - min_values[i])
+
+    data = np.reshape(np.array(one_data[:-1]), [1, -1]).astype(np.float32)
+    label = one_data[-1]
+    return data, label
