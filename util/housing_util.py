@@ -46,18 +46,10 @@ def load_data():
     return training_data, test_data, [max_values,min_values, avg_values]
 
 
-def load_one_example():
-    data_dir = 'resources/housing.data'
-    f = open(data_dir, 'r')
-    datas = f.readlines()
+def load_one_example(index=-10, test_datas=[]):
+    datas = test_datas.copy()
     # 选择倒数第10条数据用于测试
-    tmp = datas[-10]
-    tmp = tmp.strip().split()
-    one_data = [float(v) for v in tmp]
-
-    # 对数据进行归一化处理
-    for i in range(len(one_data) - 1):
-        one_data[i] = (one_data[i] - avg_values[i]) / (max_values[i] - min_values[i])
+    one_data = datas[index]
 
     data = np.reshape(np.array(one_data[:-1]), [1, -1]).astype(np.float32)
     label = one_data[-1]
